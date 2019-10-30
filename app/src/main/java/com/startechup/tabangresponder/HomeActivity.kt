@@ -38,21 +38,6 @@ class HomeActivity : AppCompatActivity() {
                 // We don't want to get data on first load
                 // We'll just listen to the update
                 if (!isFirstLoaded && acceptReport) {
-//                    test?.documentChanges?.forEach { document ->
-//                        if (document.type == DocumentChange.Type.ADDED) {
-//                            val doc = document.document.get(
-//                                "reportReference",
-//                                DocumentReference::class.java
-//                            ) as DocumentReference
-//                            doc.get().addOnSuccessListener(this) {
-//                                location["long"] = it.getDouble("lng") ?: 0.0
-//                                location["lat"] = it.getDouble("lat") ?: 0.0
-//                                reportId = it.id
-//                                showDialog(it.getString("desc") ?: "unknown message")
-//                            }
-//                        }
-//                    }
-
                     test?.documentChanges?.first { it.type == DocumentChange.Type.ADDED }?.run {
                         acceptReport = false
                         val doc = this.document.get("reportReference", DocumentReference::class.java) as DocumentReference

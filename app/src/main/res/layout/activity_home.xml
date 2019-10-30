@@ -7,15 +7,25 @@
     android:gravity="center"
     tools:context="com.startechup.tabangresponder.HomeActivity">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/defualt_map" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#99000000"
         android:gravity="center"
+        android:padding="24dp"
         android:text="Waiting for reports"
+        android:textColor="@android:color/white"
         android:textSize="24sp" />
 
     <include
-        android:visibility="gone"
         android:id="@+id/reportView"
-        layout="@layout/report_details" />
+        layout="@layout/report_details"
+        android:visibility="gone" />
 </RelativeLayout>
