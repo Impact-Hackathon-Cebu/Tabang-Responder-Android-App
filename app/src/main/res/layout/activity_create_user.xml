@@ -21,8 +21,13 @@
         android:id="@+id/editText_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username" />
+        android:hint="UserID" />
 
+    <EditText
+        android:id="@+id/editText_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full Name" />
 
     <EditText
         android:id="@+id/editText_password"
@@ -45,6 +50,7 @@
         android:hint="Contact Number" />
 
     <Button
+        android:id="@+id/button_create"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="SignUp" />
