@@ -57,7 +57,7 @@
 
         <Button
             android:visibility="gone"
-            android:text="Accept for new reports"
+            android:text="Accept new reports"
             android:id="@+id/button_new_reports"
             android:textColor="@android:color/white"
             android:background="@color/colorPrimary"

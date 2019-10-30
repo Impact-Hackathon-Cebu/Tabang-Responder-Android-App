@@ -36,7 +36,7 @@ class HomeActivity : AppCompatActivity() {
             .addSnapshotListener(this) { test, test2 ->
                 test?.documentChanges?.forEach { document ->
                     if (document.type == DocumentChange.Type.ADDED) {
-                        val doc = document.document.get("test", DocumentReference::class.java) as DocumentReference
+                        val doc = document.document.get("reportReference", DocumentReference::class.java) as DocumentReference
                         doc.get().addOnSuccessListener(this) {
                             location["long"] = it.getDouble("lng") ?: 0.0
                             location["lat"] = it.getDouble("lat") ?: 0.0
