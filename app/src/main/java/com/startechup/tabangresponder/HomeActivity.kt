@@ -1,27 +1,20 @@
 package com.startechup.tabangresponder
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.report_details.view.*
-import java.lang.ref.Reference
-import android.content.Intent
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.net.Uri
 
 
 class HomeActivity : AppCompatActivity() {
+
     private lateinit var db: FirebaseFirestore
-    private lateinit var responderData: DocumentSnapshot
 
     private var location = mutableMapOf<String, Double>()
 
@@ -36,7 +29,10 @@ class HomeActivity : AppCompatActivity() {
             .addSnapshotListener(this) { test, test2 ->
                 test?.documentChanges?.forEach { document ->
                     if (document.type == DocumentChange.Type.ADDED) {
-                        val doc = document.document.get("reportReference", DocumentReference::class.java) as DocumentReference
+                        val doc = document.document.get(
+                            "reportReference",
+                            DocumentReference::class.java
+                        ) as DocumentReference
                         doc.get().addOnSuccessListener(this) {
                             location["long"] = it.getDouble("lng") ?: 0.0
                             location["lat"] = it.getDouble("lat") ?: 0.0
