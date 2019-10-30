@@ -5,9 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.report_details.view.*
 
@@ -18,6 +20,10 @@ class HomeActivity : AppCompatActivity() {
 
     private var location = mutableMapOf<String, Double>()
 
+    private var isFirstLoaded = true
+
+    private var reportId: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -27,24 +33,43 @@ class HomeActivity : AppCompatActivity() {
         db.collection("responders").document("U85Obd8cEmvvBuoXruwa")
             .collection("reports")
             .addSnapshotListener(this) { test, test2 ->
-                test?.documentChanges?.forEach { document ->
-                    if (document.type == DocumentChange.Type.ADDED) {
-                        val doc = document.document.get(
-                            "reportReference",
-                            DocumentReference::class.java
-                        ) as DocumentReference
-                        doc.get().addOnSuccessListener(this) {
-                            location["long"] = it.getDouble("lng") ?: 0.0
-                            location["lat"] = it.getDouble("lat") ?: 0.0
-                            showDialog(it.getString("desc") ?: "unknown message")
+                // We don't want to get data on first load
+                // We'll just listen to the update
+                if (!isFirstLoaded) {
+                    test?.documentChanges?.forEach { document ->
+                        if (document.type == DocumentChange.Type.ADDED) {
+                            val doc = document.document.get(
+                                "reportReference",
+                                DocumentReference::class.java
+                            ) as DocumentReference
+                            doc.get().addOnSuccessListener(this) {
+                                location["long"] = it.getDouble("lng") ?: 0.0
+                                location["lat"] = it.getDouble("lat") ?: 0.0
+                                reportId = it.id
+                                showDialog(it.getString("desc") ?: "unknown message")
+                            }
                         }
                     }
+                } else {
+                    isFirstLoaded = false
                 }
             }
 
         reportView.button_arrived.setOnClickListener {
             reportView.button_arrived.visibility = View.GONE
             reportView.button_new_reports.visibility = View.VISIBLE
+
+            db
+                .collection("hospitals")
+                .document("Ffv7QjIh6VbiLiYTl8An")
+                .collection("reports")
+                .document(reportId)
+                .collection("actions")
+                .add(mapOf(
+                    "desc" to "I arrived at the location",
+                    "responderName" to "Rhusfer John Cuezon",
+                    "time" to Timestamp.now()
+                ))
         }
 
         reportView.fab_direction.setOnClickListener {
@@ -77,6 +102,18 @@ class HomeActivity : AppCompatActivity() {
             reportView.visibility = View.VISIBLE
 
             reportView.textView_description.text = message
+
+            db
+                .collection("hospitals")
+                .document("Ffv7QjIh6VbiLiYTl8An")
+                .collection("reports")
+                .document(reportId)
+                .collection("actions")
+                .add(mapOf(
+                    "desc" to "I arrived at the location",
+                    "responderName" to "Rhusfer John Cuezon",
+                    "time" to Timestamp.now()
+                ))
         }
         dialog.showDialog(supportFragmentManager)
     }
