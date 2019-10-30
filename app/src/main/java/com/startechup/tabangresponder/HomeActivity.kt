@@ -3,6 +3,7 @@ package com.startechup.tabangresponder
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
@@ -21,6 +22,7 @@ class HomeActivity : AppCompatActivity() {
     private var location = mutableMapOf<String, Double>()
 
     private var isFirstLoaded = true
+    private var acceptReport = true
 
     private var reportId: String = ""
 
@@ -35,19 +37,30 @@ class HomeActivity : AppCompatActivity() {
             .addSnapshotListener(this) { test, test2 ->
                 // We don't want to get data on first load
                 // We'll just listen to the update
-                if (!isFirstLoaded) {
-                    test?.documentChanges?.forEach { document ->
-                        if (document.type == DocumentChange.Type.ADDED) {
-                            val doc = document.document.get(
-                                "reportReference",
-                                DocumentReference::class.java
-                            ) as DocumentReference
-                            doc.get().addOnSuccessListener(this) {
-                                location["long"] = it.getDouble("lng") ?: 0.0
-                                location["lat"] = it.getDouble("lat") ?: 0.0
-                                reportId = it.id
-                                showDialog(it.getString("desc") ?: "unknown message")
-                            }
+                if (!isFirstLoaded && acceptReport) {
+//                    test?.documentChanges?.forEach { document ->
+//                        if (document.type == DocumentChange.Type.ADDED) {
+//                            val doc = document.document.get(
+//                                "reportReference",
+//                                DocumentReference::class.java
+//                            ) as DocumentReference
+//                            doc.get().addOnSuccessListener(this) {
+//                                location["long"] = it.getDouble("lng") ?: 0.0
+//                                location["lat"] = it.getDouble("lat") ?: 0.0
+//                                reportId = it.id
+//                                showDialog(it.getString("desc") ?: "unknown message")
+//                            }
+//                        }
+//                    }
+
+                    test?.documentChanges?.first { it.type == DocumentChange.Type.ADDED }?.run {
+                        acceptReport = false
+                        val doc = this.document.get("reportReference", DocumentReference::class.java) as DocumentReference
+                        doc.get().addOnSuccessListener(this@HomeActivity) { docData ->
+                            location["long"] = docData.getDouble("lng") ?: 0.0
+                            location["lat"] = docData.getDouble("lat") ?: 0.0
+                            reportId = docData.id
+                            showDialog(docData.getString("desc") ?: "unknown message")
                         }
                     }
                 } else {
@@ -59,6 +72,7 @@ class HomeActivity : AppCompatActivity() {
             reportView.button_arrived.visibility = View.GONE
             reportView.button_new_reports.visibility = View.VISIBLE
 
+            Log.d("Rhusfer", "A hospitals/Ffv7QjIh6VbiLiYTl8An/reports/$reportId")
             db
                 .collection("hospitals")
                 .document("Ffv7QjIh6VbiLiYTl8An")
@@ -80,6 +94,8 @@ class HomeActivity : AppCompatActivity() {
             reportView.button_arrived.visibility = View.VISIBLE
             reportView.button_new_reports.visibility = View.GONE
             reportView.visibility = View.GONE
+
+            acceptReport = true
         }
     }
 
@@ -103,6 +119,7 @@ class HomeActivity : AppCompatActivity() {
 
             reportView.textView_description.text = message
 
+            Log.d("Rhusfer", "B hospitals/Ffv7QjIh6VbiLiYTl8An/reports/$reportId")
             db
                 .collection("hospitals")
                 .document("Ffv7QjIh6VbiLiYTl8An")
@@ -110,7 +127,7 @@ class HomeActivity : AppCompatActivity() {
                 .document(reportId)
                 .collection("actions")
                 .add(mapOf(
-                    "desc" to "I arrived at the location",
+                    "desc" to "We'll be there in 5 mins",
                     "responderName" to "Rhusfer John Cuezon",
                     "time" to Timestamp.now()
                 ))
