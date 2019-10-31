@@ -57,7 +57,6 @@ class HomeActivity : AppCompatActivity() {
             reportView.button_arrived.visibility = View.GONE
             reportView.button_new_reports.visibility = View.VISIBLE
 
-            Log.d("Rhusfer", "A hospitals/Ffv7QjIh6VbiLiYTl8An/reports/$reportId")
             db
                 .collection("hospitals")
                 .document("Ffv7QjIh6VbiLiYTl8An")
@@ -104,7 +103,6 @@ class HomeActivity : AppCompatActivity() {
 
             reportView.textView_description.text = message
 
-            Log.d("Rhusfer", "B hospitals/Ffv7QjIh6VbiLiYTl8An/reports/$reportId")
             db
                 .collection("hospitals")
                 .document("Ffv7QjIh6VbiLiYTl8An")
